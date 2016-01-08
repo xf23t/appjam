@@ -8,6 +8,7 @@ var session = require('express-session');
 
 var join = require('./routes/join');
 var login = require('./routes/login');
+var logout = require('/routes/logout');
 
 
 var app = express();
@@ -33,7 +34,7 @@ app.use(session({
 
 
 app.use('/join', join);
-app.use('/login', logiin);
+app.use('/login', login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -24,29 +24,51 @@ router.post('/login', function (req.res.next) {
 });
 */
 
-router.post('/login', function(req, res, next){
-    var id= req.body.user_id_email;
-    var pw= req.body.user_pw;
-    
-    pool.getConnection(function(error, connection){
-        if(err) console.error('err',err);
-        connection.query('select count(*) cnt from user where user_id_email=? AND user_pw=?', [id,pw], function(error, rows){
-            if(err) console.log('err',err);
-            console.log('rows',rows);
+router.post('/login', function (req, res, next) {
+    var id = req.body.user_id_email;
+    var pw = req.body.user_pw;
+
+    pool.getConnection(function (error, connection) {
+        if (err) console.error('err', err);
+        connection.query('select count(*) cnt from user where user_id_email=? AND user_pw=?', [id, pw], function (error, rows) {
+            if (err) console.log('err', err);
+            console.log('rows', rows);
             var cnt = rows[0].cnt;
-            if(cnt == 1){
-                req.session.user_id_email=id;
-                res.send('<script>alert("정상 로그인");location.href="/";<script>');
-            }
-            else{
-                req.json({result : 'fail'});
-                res.send('<script>alert("아이디 or 비번 오류");history.back();</script>');
-            }
+            if (cnt == 1) {
+                /*                req.session.user_id_email=id;
+                                res.send('<script>alert("정상 로그인");location.href="/";<script>');
+                            }
+                            */
+                connection.query('select * from user where user_id_email=?;', [rows.insertId], function (error, cursor) {
+
+                        if (cursor.length > 0) {
+
+                            res.json({
+
+                                result: true,
+                                id: cursor[0].user_id_email,
+                                pw: cursor[0].user_pw,
+                                nick: cursor[0].user_nick,
+                            });
+                        } else {
+                            res.status(503).json({
+                                result: false,
+                                reason: "Cannot login"
+                            });
+                        });
+
+
+                    else {
+                        req.json({
+                            result: 'fail'
+                        });
+                        res.send('<script>alert("아이디 or 비번 오류");history.back();</script>');
+                    }
+                });
         });
     });
 });
-        
+
 
 
 module.exports = router;
-
