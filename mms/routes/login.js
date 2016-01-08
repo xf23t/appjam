@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     'host': 'aws-rds-my-sql.czyy7a7mm4rr.us-west-2.rds.amazonaws.com',
     'user': 'user',
     'password': 'password',
-    'database': 'board',
+    'database': 'server',
 });
 
 /*
@@ -24,50 +24,43 @@ router.post('/login', function (req.res.next) {
 });
 */
 
-router.post('/login', function (req, res, next) {
+router.post('/', function (req, res, next) {
     var id = req.body.user_id_email;
     var pw = req.body.user_pw;
 
-    pool.getConnection(function (error, connection) {
-        if (err) console.error('err', err);
-        connection.query('select count(*) cnt from user where user_id_email=? AND user_pw=?', [id, pw], function (error, rows) {
-            if (err) console.log('err', err);
-            console.log('rows', rows);
-            var cnt = rows[0].cnt;
-            if (cnt == 1) {
-                /*                req.session.user_id_email=id;
-                                res.send('<script>alert("정상 로그인");location.href="/";<script>');
-                            }
-                            */
-                connection.query('select * from user where user_id_email=?;', [rows.insertId], function (error, cursor) {
+    // pool.getConnection(function (error, connection) {
+    //    if (err) console.error('err', err);
+    connection.query('select count(*) cnt from user where user_id_email=? AND user_pw=?;', [id, pw], function (error, info) {
+        if (error) console.error('error', error);
+        console.log('info', info);
+        var cnt = info[0].cnt;
+        if (cnt == 1) {
+            /*                req.session.user_id_email=id;
+                            res.send('<script>alert("정상 로그인");location.href="/";<script>');
+                        }
+                        */
+            connection.query('select * from user where user_id_email=?;', [id], function (error, cursor) {
 
-                    if (cursor.length > 0) {
+                if (cursor.length > 0) {
 
-                        res.json({
+                    res.json({
 
-                            result: true,
-                            id: cursor[0].user_id_email,
-                            pw: cursor[0].user_pw,
-                            nick: cursor[0].user_nick,
-                        });
-                    } else {
-                        res.status(503).json({
-                            result: false,
-                            reason: "Cannot login"
-                        });
-                    };
+                        result: true,
+                        id: cursor[0].user_id_email,
+                        pw: cursor[0].user_pw,
+                        nick: cursor[0].user_nick,
+                    });
+                }
 
-
-                    /*    else {
-                            req.json({
-                                result: 'fail'
-                            });
-                            res.send('<script>alert("아이디 or 비번 오류");history.back();</script>');
-                        }*/
-                });
-            }
-        });
+            });
+        } else {
+            res.status(503).json({
+                result: false,
+                reason: "Cannot login",
+            });
+        }
     });
+
 });
 
 
