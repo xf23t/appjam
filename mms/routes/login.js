@@ -41,34 +41,34 @@ router.post('/login', function (req, res, next) {
                             */
                 connection.query('select * from user where user_id_email=?;', [rows.insertId], function (error, cursor) {
 
-                        if (cursor.length > 0) {
+                    if (cursor.length > 0) {
 
-                            res.json({
+                        res.json({
 
-                                result: true,
-                                id: cursor[0].user_id_email,
-                                pw: cursor[0].user_pw,
-                                nick: cursor[0].user_nick,
-                            });
-                        } else {
-                            res.status(503).json({
-                                result: false,
-                                reason: "Cannot login"
-                            });
+                            result: true,
+                            id: cursor[0].user_id_email,
+                            pw: cursor[0].user_pw,
+                            nick: cursor[0].user_nick,
                         });
-
-
-                    else {
-                        req.json({
-                            result: 'fail'
+                    } else {
+                        res.status(503).json({
+                            result: false,
+                            reason: "Cannot login"
                         });
-                        res.send('<script>alert("아이디 or 비번 오류");history.back();</script>');
-                    }
+                    };
+
+
+                    /*    else {
+                            req.json({
+                                result: 'fail'
+                            });
+                            res.send('<script>alert("아이디 or 비번 오류");history.back();</script>');
+                        }*/
                 });
+            }
         });
     });
 });
-
 
 
 module.exports = router;
