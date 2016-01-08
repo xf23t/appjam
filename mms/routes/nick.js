@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     'host': 'aws-rds-my-sql.czyy7a7mm4rr.us-west-2.rds.amazonaws.com',
     'user': 'user',
     'password': 'password',
-    'database': 'board',
+    'database': 'server',
 });
 
 router.post('/nick', function (req, res, next) {    //닉네임 중복확인 (아이디 중복확인과 동일하게

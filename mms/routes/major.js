@@ -6,7 +6,7 @@ var connection = mysql.createConnection({
     'host': 'aws-rds-my-sql.czyy7a7mm4rr.us-west-2.rds.amazonaws.com',
     'user': 'user',
     'password': 'password',
-    'database': 'board',
+    'database': 'server',
 });
 
 

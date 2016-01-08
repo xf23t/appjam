@@ -34,14 +34,11 @@ router.post('/', function (req, res, next) {
         if (error) console.error('error', error);
         console.log('info', info);
         var cnt = info[0].cnt;
-        if (cnt == 1) {
-            /*                req.session.user_id_email=id;
-                            res.send('<script>alert("정상 로그인");location.href="/";<script>');
-                        }
-                        */
-            connection.query('select * from user where user_id_email=?;', [id], function (error, cursor) {
+        if (cnt == 1) {     //아이디와 비밀번호가 존재하면, 
 
-                if (cursor.length > 0) {
+            connection.query('select * from user where user_id_email=?;', [id], function (error, cursor) {  //해당하는 아이디의 정보를 불러온다.
+
+                if (cursor.length > 0) {   // (확인)
 
                     res.json({
 
@@ -53,7 +50,7 @@ router.post('/', function (req, res, next) {
                 }
 
             });
-        } else {
+        } else {            // cnt ==0 일치하는 정보가 없다면
             res.status(503).json({
                 result: false,
                 reason: "Cannot login",
