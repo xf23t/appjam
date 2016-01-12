@@ -15,9 +15,9 @@ router.get('/:user_idx', function (req, res, next) {
 
         if (cursor.length > 0) {
 
-//		res.json(cursor[0]);
+//              res.json(cursor[0]);
 
-            res.json({	
+            res.json({
               result: true,
               userName: cursor[0].user_nick,
             userEmail: cursor[0].user_id_email,

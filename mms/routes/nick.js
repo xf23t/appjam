@@ -9,18 +9,57 @@ var connection = mysql.createConnection({
     'database': 'server',
 });
 
-router.post('/nick', function (req, res, next) {    //닉네임 중복확인 (아이디 중복확인과 동일하게
-            connection.query('select * from user where user_nick=?;' [req.body.user_nick], function (error, cursor) {
-                        if (cursor.length !=0){
-                            res.status(403).json({
-                                result : false,
-                                reason : "This Nickname is Already exist"
+router.post('/', function (req, res, next) { //닉네임 중복확인 
+    var nick = req.body.user_nick; //id 라고 변경함
+    var idx = req.body.user_idx;
+
+    connection.query('select count(*) cnt from user where user_nick=?;', [nick], function (error, info) {
+        //      if (error) console.error('error', error);
+        
+        console.log('info', info);
+        var cnt = info[0].cnt;
+        if (cnt == 0) {
+
+       //중복이 없을 경우 닉네임,  서버에 저장(올바른 데이터일 경우)
+			
+            
+            connection.query('update user set user_nick = ? where user_idx= ? ;', [nick, idx], function (error, info) {
+                if (error == null) {
+
+                    connection.query('select * from user where user_idx=?;', [idx], function (error, cursor) {
+
+                        if (cursor.length > 0) {
+
+                            res.json({
+                                result: true,
+                                nick: cursor[0].user_nick,
+                            
                             });
-                        }
-                        else        //중복이 아닐경우 서버에 저장 후 다음 화면
-                            connection.query('insert into user(user_nick) values (?);', [req.body.user_nick]);
+                        } else
+                            res.status(503).json({
+                                result: false,
+                                reason: "인덱스가 유효하지 않습니다 ",	//인덱스 에러일경우
+                            });
+
+                    });
+                } else {
+                    res.status(503).json({
+                        result: false,
+                        reason: "This nick is already exist",
+                    });
+                }
+
             });
+        } 
+        else
+            res.status(503).json({
+                result: false,
+                reason: "닉네임이 중복됩니다",	// 닉네임 중복일때 알려주는 에러
+
+        });
+    });
 });
+
 
 module.exports = router;
                                             
